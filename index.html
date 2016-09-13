@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Week 6 Homework try</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.rawgit.com/twbs/bootstrap/v4-dev/dist/css/bootstrap.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://bootswatch.com/cosmo/bootstrap.min.css">
+    <!-- //my stylesheet -->
+    <link rel="stylesheet" href="style.css" type="text/css">
+
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css?family=Oswald" rel="stylesheet">
+</head>
+
+<body>
+    <div class="jumbotron">
+        <div class="container">
+            <h1 class="text-center">GO BACK IN TIME</h1>
+
+            
+            <div class="text-center col-lg-6">
+           
+                <button class="year btn-lg btn-success" data-name="1970">1970</button>
+                <button class="year btn-lg btn-info" data-name="1980">1980</button>
+                <button class="year btn-lg btn-primary" data-name="1990">1990</button>
+                <button class="year btn-lg btn-warning" data-name="2000">2000</button>
+                <button class="year btn-lg btn-danger" data-name="1970">2010</button>
+            </div>
+
+            
+            <!-- //year Search Form -->
+            <form id="year-form" class="text-center col-lg-6">
+                <label for="year-input">Enter any year here</label>
+                <input type="text" id="year-input">
+                <!-- Button triggers new year to be added -->
+                <input id="addyear" type="submit" value="Submit" class="btn-primary">
+            </form>
+            <br>
+            <div id="buttonsView" class="text-center">
+            </div>
+        </div>
+    </div>
+    <div class="container-fluid">
+        <div class="row">
+            <div id="gifsView">
+            </div>
+        </div>
+    </div>
+    </div>
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="http://code.jquery.com/jquery-3.1.0.min.js" integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s=" crossorigin="anonymous"></script>
+    <script type="text/javascript">
+    //Inital array of years
+    var years = ['1963', '1973', '1983', '1993', '2003', '2013'];
+
+
+    // Clicking year Buttons
+    function displayGifs() {
+        var year = $(this).attr('data-name');
+        var queryURL = "http://api.giphy.com/v1/gifs/search?q=" + year + "&api_key=dc6zaTOxFJmzC&limit=24";
+
+        // Creates AJAX call for the specific year 
+        $.ajax({
+            url: queryURL,
+            method: 'GET'
+        })
+
+        .done(function(response) {
+            console.log(response);
+
+            var results = response.data;
+            for (var i = 0; i < results.length; i++) {
+                var yearDiv = $('<div>');
+                yearDiv.addClass('col-lg-3');
+                var p = $('<p>').text("Rating: " + results[i].rating);
+                var yearImage = $('<img>');
+                yearImage.attr('src', results[i].images.fixed_height.url);
+                yearImage.addClass('yearGif');
+                yearImage.attr('data-state', "still");
+                yearImage.attr('data-still', results[i].images.fixed_height_still.url);
+                yearImage.attr('data-animate', results[i].images.fixed_height.url);
+
+                yearDiv.append(p);
+                yearDiv.append(yearImage);
+                $('#gifsView').prepend(yearDiv);
+            }
+
+        });
+    }
+
+    // Generic function for displaying year data
+    function renderButtons() {
+        // Deletes the years prior to adding new years (this is necessary otherwise you will have repeat buttons)
+        $('#buttonsView').empty();
+        // Loops through the array of years
+        for (var i = 0; i < years.length; i++) {
+            // Then dynamicaly generates buttons for each year in the array
+            // Note the jQUery syntax here...
+            var a = $('<button>'); // This code $('<button>') is all jQuery needs to create the beginning and end tag. (<button></button>)
+            a.addClass('year'); // Added a class
+            a.addClass('btn-default');
+            a.attr('data-name', years[i]); // Added a data-attribute
+            a.text(years[i]); // Provided the initial button text
+            $('#buttonsView').append(a); // Added the button to the HTML
+        }
+    }
+
+    function pauseGifs() {
+        var state = $(this).attr('data-state');
+
+        if (state == "still") {
+            $(this).attr('src', $(this).data('animate'));
+            $(this).attr('data-state', 'animate');
+
+        } else {
+            $(this).attr('src', $(this).data('still'));
+            $(this).attr('data-state', 'still');
+        }
+
+    }
+
+    // ========================================================
+    // This function handles events where one button is clicked
+    $('#addyear').on('click', function() {
+        // This line of code will grab the input from the textbox
+        var year = $('#year-input').val().trim();
+        // The year from the textbox is then added to our array
+        years.push(year);
+        // Our array then runs which handles the processing of our year array
+        renderButtons();
+
+        // We have this line so that users can hit "enter" instead of clicking on ht button and it won't move to the next page
+        return false;
+
+        
+    });
+    // ========================================================
+    // Generic function for displaying the yearInfo
+    // BAD CODE = won't work for ne wbuttons (can't capture elements generated dynamically)
+    // $('.year').on('click', alertyearName);
+    // GOOD CODE = will work for both the original buttons and all of the new buttons
+    // ========================================================
+    // This calls the renderButtons() function
+    $(document).on('click', '.year', displayGifs);
+    renderButtons();
+    $(document).on('click', '.yearGif', pauseGifs);
+    </script>
+</body>
+
+</html>
