@@ -4,8 +4,8 @@ div{
 }
 .jumbotron {
 	
-	background-image: url("tritonecolor.jpg");
-	background-size: 100%;
+	background-image: url("assets/images/blk200.gif");
+	/*background-size: 100%;*/
 	color: #ffffff;
 
 	
@@ -16,4 +16,9 @@ h1 {
 	color: #ffffff;
 
 
+}
+
+
+#year-input {
+	color: #000000;
 }
