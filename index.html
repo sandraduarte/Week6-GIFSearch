@@ -59,7 +59,7 @@
     // Clicking year Buttons
     function displayGifs() {
         var year = $(this).attr('data-name');
-        var queryURL = "http://api.giphy.com/v1/gifs/search?q=" + year + "&api_key=dc6zaTOxFJmzC&limit=24";
+        var queryURL = "https://api.giphy.com/v1/gifs/search?q=" + year + "&api_key=dc6zaTOxFJmzC&limit=24";
 
         // Creates AJAX call for the specific year 
         $.ajax({
